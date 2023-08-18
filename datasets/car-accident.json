@@ -1,0 +1,32 @@
+{
+    "dataset_name": "car-accident",
+    "dataset_output": "datasets_output",
+    "image_format": "png",
+    "image_size": {"width": 512, "height": 512},
+    "steps": 50,
+    "dataset_classes": ["car", "sedan", "suv", "pickup", "bus"],
+    "dataset_to_model_class_map": {"car":"car", "sedan": "car", "suv": "car", "pickup": "truck", "bus": "bus"},
+    "label_model": {"type": "YOLOSeg", "weights": "models/seg/yolov8l-seg.pt", "classes": "models/seg/yolov8-classes.txt"},
+    "unsupervised": false,
+    "deterministic": true,
+    "images_per_shard": 500,
+    "txt2img": {
+        "seed_range": {"min":9092091, "max":9982091},
+        "seed_count_per_prompt": 2,
+        "image_count": 250,
+        "textual_inversion": {
+            "weights":"models/sd/embeddings/car-accident.pt",
+            "keyword": "<car-accident>"
+        },
+        "object_names": ["car", "suv", "pickup"],
+        "view_points": ["rear", "front"],
+        "times_of_day": ["sunrise", "day", "noon", "night"],
+        "sky_conditions": ["clear", "clouds"],
+        "weather_conditions": ["sunny", "overcast", "foggy"],
+        "prompts": [
+            "wide angle {view_point} view of <car-accident> collision++ where a {object_name}++ is crushed++ by a car in middle of the road, firefighters standing, happened on a rural road, high detailed street++. The weather is {weather_condition}. It's {time_of_day}",
+            "wide angle {view_point} view of <car-accident> collision++ where a {object_name}++ in explosion++ in middle of the road, happened on city road with buildings in background, high detailed street++. The weather is {weather_condition}. It's {time_of_day}"
+        ],
+        "negative_prompt": "(deformed road lanes, deformed car, deformed car parts, deformed bus, deformed bus parts, deformed face, deformed body, deformed logo, deformed iris, deformed pupils, deformed text, semi-realistic, cgi, 3d, render, sketch, cartoon, drawing, anime:1.4), motion blur, soft blur, worst quality, low quality, ugly, duplicate, morbid, mutilated, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed, blurry, dehydrated, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, fused fingers, too many fingers, long neck" 
+    }
+}
