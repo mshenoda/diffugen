@@ -194,24 +194,26 @@ def create_binary_mask(labels, image_width, image_height):
 
     return Image.fromarray(binary_mask)
 
-def generate_inpaint_dataset(dataset_config:str="dataset.json"):
+def generate_inpaint_dataset(dataset_config:str):
     # Read JSON data from file
     with open(dataset_config, "r") as json_file:
         json_data = json.load(json_file)
 
     # Extract general settings
     dataset_name = json_data["dataset_name"]
-    dataset_output = json_data["dataset_output"]
+    dataset_root = json_data["dataset_root"]
     unsupervised = json_data["unsupervised"]
     label_model = json_data["label_model"]
     steps = json_data["steps"]
     width = json_data["image_size"]["width"]
     height = json_data["image_size"]["height"]
+    image_format = json_data["image_format"]
     dataset_to_model_class_map = json_data["dataset_to_model_class_map"]
     label_model_classes_file = json_data["label_model"]["classes"]
 
     # Extract img2img settings
     negative_prompt = json_data["txt2img"]["negative_prompt"]
+    stable_diffusion_model = json_data["inpaint"]["stable_diffusion_model"]
 
     # Create dataset to segmentation model class mappings
     class_id_mapping = create_class_id_mapping(dataset_to_model_class_map, label_model_classes_file)
@@ -223,9 +225,7 @@ def generate_inpaint_dataset(dataset_config:str="dataset.json"):
     # Generate prompts from the JSON data
     prompts_list = generate_prompts(json_data)
 
-    sd_model_name = "realistic_vision_inpainting"
-    sd_model_path = f"../models/{sd_model_name}" # Realistic_Vision_V4.0  Realistic_Vision_V5.1_noVAE
-    pipe = StableDiffusionInpaintPipeline.from_pretrained(pretrained_model_name_or_path=sd_model_path, torch_dtype=torch.float16)
+    pipe = StableDiffusionInpaintPipeline.from_pretrained(pretrained_model_name_or_path=stable_diffusion_model, torch_dtype=torch.float16)
     pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
     pipe.enable_model_cpu_offload()
     pipe.enable_attention_slicing(1)
@@ -233,7 +233,7 @@ def generate_inpaint_dataset(dataset_config:str="dataset.json"):
     #pipe = pipe.to("cuda:0")
 
     sd_model_info = {
-        "name": sd_model_name,
+        "model": stable_diffusion_model,
         "torch_dtype": "torch.float16"
     }
 
@@ -252,10 +252,9 @@ def generate_inpaint_dataset(dataset_config:str="dataset.json"):
     # Calculate the number of prompts to sample
     image_count = len(prompts_list)
     print("Image count: ", image_count)
-    seed = 9782091#random.randint(seed_range["min"], seed_range["max"]) # set to fixed seed, if need re-producablity 
+    seed = 9782091 # set to fixed seed, if need re-producablity 
     generator = create_generator(seed) 
-    #seeds = random_unique_int_list(seed_count_per_prompt, seed_range["min"], seed_range["max"])
-    
+
     shard_index = 1
     current_image_count = 0
     for prompt_info in prompts_list:
@@ -271,9 +270,10 @@ def generate_inpaint_dataset(dataset_config:str="dataset.json"):
         label_path = prompt_info["label_path"]
         seed = prompt_info["seed"]
         print("image_path=", image_path)
-        attentions_dir, images_dir, labels_dir, masks_dir, vis_dir = create_output_directories(image_path, "dataset_output", dataset_name)
-        
-        sd_model_info_json_file = f"{dataset_output}/{dataset_name}/inpaint/sd_model_info.json"
+        attentions_dir, images_dir, labels_dir, masks_dir, vis_dir = create_output_directories(image_path, dataset_root, dataset_name)
+        dataset_dir = f"{dataset_root}/{dataset_name}/inpaint"
+        os.makedirs(dataset_dir, exist_ok=True)
+        sd_model_info_json_file = f"{dataset_dir}/stable_diffusion_model_info.json"
         if os.path.exists(sd_model_info_json_file) == False:
             save_json(sd_model_info, sd_model_info_json_file)
 
@@ -308,9 +308,9 @@ def generate_inpaint_dataset(dataset_config:str="dataset.json"):
         output_image = output.images[0]
 
         name = object_name
-        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-        basename = f"{name}_{view_point}_{time_of_day}_{sky_condition}_{weather_condition}_{timestamp}"
-        image_filename = f"{basename}.png"
+        timestamp = datetime.now().strftime("%H%M%S")
+        basename = f"{name}_{view_point}_{time_of_day}_{sky_condition}_{weather_condition}_{seed}_{timestamp}"
+        image_filename = f"{basename}.{image_format}"
         label_filename = f"{basename}.json"
         print(f"\n saving: {image_filename} \n")
         save_json(label_file_data, f"{labels_dir}/{label_filename}")

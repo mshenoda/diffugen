@@ -1,6 +1,6 @@
 {
     "dataset_name": "cars",
-    "dataset_output": "datasets_output",
+    "dataset_root": "datasets_output",
     "image_format": "png",
     "image_size": {"width": 512, "height": 512},
     "steps": 50,
@@ -11,6 +11,7 @@
     "deterministic": true,
     "images_per_shard": 500,
     "txt2img": {
+        "stable_diffusion_model": "../models/Realistic_Vision_V4.0",
         "seed_range": {"min":9092091, "max":9982091},
         "seed_count_per_prompt": 2,
         "image_count": 250,
@@ -25,12 +26,14 @@
         ],
         "negative_prompt": "(deformed road lanes, deformed car, deformed car parts, deformed bus, deformed bus parts, deformed face, deformed body, deformed logo, deformed iris, deformed pupils, deformed text, semi-realistic, cgi, 3d, render, sketch, cartoon, drawing, anime:1.4), out of frame, motion blur, soft blur, worst quality, low quality, ugly, duplicate, morbid, mutilated, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed, blurry, dehydrated, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, fused fingers, too many fingers, long neck" },
     "img2img": {
+        "stable_diffusion_model": "../models/Realistic_Vision_V4.0",
         "source_dataset": "datasets_output/cars/txt2img",
-        "times_of_day": ["same"],
+        "times_of_day": ["day"],
         "sky_conditions": ["cloudy"],
         "weather_conditions": ["flood rain", "raining", "snowing", "fogging"]
     },
     "inpaint": {
+        "stable_diffusion_model": "../models/realistic_vision_inpainting",
         "source_dataset": "datasets_output/cars/txt2img",
         "car": ["yellow camero", "red mustang", "white mini cooper"],
         "sedan": ["white ford fusion", "red toyota corolla", "black honda accord", "white mercedes"],

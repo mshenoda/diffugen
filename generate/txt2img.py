@@ -57,20 +57,22 @@ def generate_prompts_from_json(json_data):
     
     return prompts
 
-def create_output_directories(dataset_name, pipe_name, shard_index):
+def create_output_directories(root_dir, dataset_name, pipe_name, shard_index):
     shard_dir = f"{shard_index:04d}"
-    root_dir = f"dataset_output/{dataset_name}/{pipe_name}"
-    images_dir = f"{root_dir}/images/{shard_dir}"
-    masks_dir = f"{root_dir}/masks/{shard_dir}"
-    attentions_dir = f"{root_dir}/attentions/{shard_dir}"
-    bboxes_dir = f"{root_dir}/labels/{shard_dir}"
-    results_dir = f"{root_dir}/visualizations/{shard_dir}"
+    dataset_dir = f"{root_dir}/{dataset_name}/{pipe_name}"
+    images_dir = f"{dataset_dir}/images/{shard_dir}"
+    masks_dir = f"{dataset_dir}/masks/{shard_dir}"
+    attentions_dir = f"{dataset_dir}/attentions/{shard_dir}"
+    bboxes_dir = f"{dataset_dir}/labels/{shard_dir}"
+    results_dir = f"{dataset_dir}/visualizations/{shard_dir}"
+    os.makedirs(root_dir, exist_ok=True)
+    os.makedirs(dataset_dir, exist_ok=True)
     os.makedirs(results_dir, exist_ok=True)
     os.makedirs(images_dir, exist_ok=True)
     os.makedirs(masks_dir, exist_ok=True)
     os.makedirs(attentions_dir, exist_ok=True)
     os.makedirs(bboxes_dir, exist_ok=True)
-    return root_dir, images_dir, masks_dir, attentions_dir, bboxes_dir, results_dir
+    return dataset_dir, images_dir, masks_dir, attentions_dir, bboxes_dir, results_dir
 
 def print_prompt_info(prompt_info):
     prompt = prompt_info["prompt"]
@@ -132,8 +134,10 @@ def generate_txt2img_dataset(dataset_config_path:str):
     label_model_classes_file = json_data["label_model"]["classes"]
     images_per_shard = json_data["images_per_shard"]
     dataset_name = json_data["dataset_name"]
+    dataset_root = json_data["dataset_root"]
 
     # Extract txt2img settings
+    stable_diffusion_model = json_data["txt2img"]["stable_diffusion_model"]
     negative_prompt = json_data["txt2img"]["negative_prompt"]
     seed_range = json_data["txt2img"]["seed_range"]
     seed_count_per_prompt = json_data["txt2img"]["seed_count_per_prompt"]
@@ -153,9 +157,7 @@ def generate_txt2img_dataset(dataset_config_path:str):
     # Generate prompts from the JSON data
     prompts_list = generate_prompts_from_json(json_data)
 
-    sd_model_name = "Realistic_Vision_V4.0"
-    sd_model_path = f"../models/{sd_model_name}" # Realistic_Vision_V4.0  Realistic_Vision_V5.1_noVAE
-    pipe = StableDiffusionPipeline.from_pretrained(pretrained_model_name_or_path=sd_model_path, torch_dtype=torch.float16)
+    pipe = StableDiffusionPipeline.from_pretrained(pretrained_model_name_or_path=stable_diffusion_model, torch_dtype=torch.float16)
     if textual_inversion:
         pipe.load_textual_inversion(textual_inversion_weights)
     pipe.enable_model_cpu_offload()
@@ -194,7 +196,7 @@ def generate_txt2img_dataset(dataset_config_path:str):
     current_image_count = 0
 
     sd_model_info = {
-        "name": sd_model_name,
+        "model": stable_diffusion_model,
         "torch_dtype": "torch.float16",
         "initial_seed": initial_seed
     }
@@ -212,9 +214,9 @@ def generate_txt2img_dataset(dataset_config_path:str):
         sky_condition = prompt_info["sky_condition"]
         weather_condition = prompt_info["weather_condition"]
 
-        root_dir, images_dir, masks_dir, attentions_dir, bboxes_dir, results_dir = create_output_directories(dataset_name, "txt2img", shard_index)
+        dataset_dir, images_dir, masks_dir, attentions_dir, bboxes_dir, results_dir = create_output_directories(dataset_root, dataset_name, "txt2img", shard_index)
         
-        sd_model_info_json_file = f"{root_dir}/sd_model_info.json"
+        sd_model_info_json_file = f"{dataset_dir}/sd_model_info.json"
         if os.path.exists(sd_model_info_json_file) == False:
             save_json(sd_model_info, sd_model_info_json_file)
 
@@ -270,4 +272,4 @@ if __name__ == "__main__":
     parser.add_argument('config', type=str, help="Path to the dataset configuration JSON file")
 
     args = parser.parse_args()
-    generate_txt2img_dataset
+    generate_txt2img_dataset(args.config)

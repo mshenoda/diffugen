@@ -1,6 +1,6 @@
 {
     "dataset_name": "car-accident",
-    "dataset_output": "datasets_output",
+    "dataset_root": "datasets_output",
     "image_format": "png",
     "image_size": {"width": 512, "height": 512},
     "steps": 50,
