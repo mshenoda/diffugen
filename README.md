@@ -2,7 +2,7 @@
 
 ## [**Paper**](https://arxiv.org/abs/) | [**Project Page**](https://arxiv.org/abs/)
 
-To address challenges associated with dataset generation, we introduce "DiffuGen," a simple and adaptable approach that harnesses the power of stable diffusion models to create labeled image datasets efficiently. By leveraging stable diffusion models, our approach not only ensures the quality of generated datasets but also provides a versatile solution for label generation. In this paper, we present the methodology behind DiffuGen, which combines the capabilities of diffusion models with two distinct labeling techniques: unsupervised and supervised. Distinctively, DiffuGen employs prompt templating for adaptable image generation and textual inversion to enhance diffusion model capabilities. 
+To address challenges associated with dataset generation, we introduce "DiffuGen," a simple and adaptable approach that harnesses the power of stable diffusion models to create labeled image datasets efficiently. By leveraging stable diffusion models, our approach not only ensures the quality of generated datasets but also provides a versatile solution for label generation. The methodology behind DiffuGen, combines the capabilities of diffusion models with two distinct labeling techniques: unsupervised and supervised. Distinctively, DiffuGen employs prompt templating for adaptable image generation and textual inversion to enhance diffusion model capabilities. 
 
 <p align="center">
 <img src="resources/data_overview.jpg" style="width:100%;"/>
@@ -27,9 +27,23 @@ git clone https://github.com/mshenoda/diffugen.git
 ```
 pip3 install torch --index-url https://download.pytorch.org/whl/cu118
 ```
-### LabelDiffusion (Core Module) and other packages
+### other packages
 ```
 pip3 install -r requirements.txt
+```
+
+## Structure
+Our module is [**LabelDiffusion**](https://github.com/mshenoda/label-diffusion) is a core dependancy
+```
+├───datasets    # contains datasets configuration files
+├───generate    # contain methods to generate dataset per pipeline
+│   ├───txt2img.py          # Uses LabelDiffusionTxt2Img
+│   ├───img2img.py          # Uses LabelDiffusionImg2Img
+│   └───inpaint.py          # Uses LabelDiffusionInpaint
+└───models
+    ├───sd
+    │   └───embeddings # textual inversion embeddings
+    └───seg            # segmentation models, currently YOLOv8-Seg
 ```
 
 ## Generate Datasets
@@ -48,3 +62,7 @@ python generate.py img2img datasets\cars.json
 ```
 python generate.py inpaint datasets\cars.json
 ```
+
+
+## Training Textual Inversion
+Please follow the guide by huggingface:  https://huggingface.co/docs/diffusers/training/text_inversion
