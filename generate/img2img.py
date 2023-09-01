@@ -1,4 +1,4 @@
-#   DatasetDiffusion - Generating Labeled Image Datasets using Stable Diffusion Pipelines
+#   DiffuGen - Generating Labeled Image Datasets using Stable Diffusion Pipelines
 #   Copyright (C) 2023  Michael Shenoda
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -16,17 +16,13 @@
 
 import os
 import torch
-import random
 import json
-import yaml
-import argparse
-from datetime import datetime
 from PIL import Image
-from tqdm import tqdm
-from itertools import product
 from diffusers import StableDiffusionImg2ImgPipeline, DPMSolverMultistepScheduler
 from ultralytics import YOLO
 from labeldiffusion import LabelDiffusionImg2Img, create_generator, draw_bounding_boxes, draw_binary_mask, concat, random_unique_int_list
+
+__all__ = ["generate_img2img_dataset"]
 
 def extract_prompt_details_from_json(json_content):
     try:
@@ -295,11 +291,3 @@ def generate_img2img_dataset(dataset_config:str):
         mask_image = draw_binary_mask(output_image, binary_mask)
         visualization_image = concat(concat(bbox_image, mask_image), attention_map)
         visualization_image.save(f"{vis_dir}/{image_filename}")
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Generate Dataset using Image to Image Diffusion")
-    parser.add_argument('config', type=str, help="Path to the configuration JSON file")
-
-    args = parser.parse_args()
-    generate_img2img_dataset(args.config)
