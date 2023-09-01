@@ -257,7 +257,7 @@ def generate_inpaint_dataset(dataset_config:str):
 
     shard_index = 1
     current_image_count = 0
-    for prompt_info in prompts_list:
+    for index, prompt_info in enumerate(prompts_list, start=1):
         print_prompt_info(prompt_info)
 
         prompt = prompt_info["prompt"]
@@ -269,7 +269,7 @@ def generate_inpaint_dataset(dataset_config:str):
         image_path = prompt_info["image_path"]
         label_path = prompt_info["label_path"]
         seed = prompt_info["seed"]
-        print("image_path=", image_path)
+        print("input image_path=", image_path)
         attentions_dir, images_dir, labels_dir, masks_dir, vis_dir = create_output_directories(image_path, dataset_root, dataset_name)
         dataset_dir = f"{dataset_root}/{dataset_name}/inpaint"
         os.makedirs(dataset_dir, exist_ok=True)
@@ -312,7 +312,7 @@ def generate_inpaint_dataset(dataset_config:str):
         basename = f"{name}_{view_point}_{time_of_day}_{sky_condition}_{weather_condition}_{seed}_{timestamp}"
         image_filename = f"{basename}.{image_format}"
         label_filename = f"{basename}.json"
-        print(f"\n saving: {image_filename} \n")
+        print(f"\n saving: {images_dir}/{image_filename} \n")
         save_json(label_file_data, f"{labels_dir}/{label_filename}")
         output_image.save(f"{images_dir}/{image_filename}")
         attention_map.save(f"{attentions_dir}/{image_filename}")

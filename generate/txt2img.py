@@ -141,11 +141,11 @@ def generate_txt2img_dataset(dataset_config_path:str):
     negative_prompt = json_data["txt2img"]["negative_prompt"]
     seed_range = json_data["txt2img"]["seed_range"]
     seed_count_per_prompt = json_data["txt2img"]["seed_count_per_prompt"]
-    image_count = json_data["txt2img"]["image_count"]
     textual_inversion = False
-    if "textual_inversion" in json_data:
+    if "textual_inversion" in json_data["txt2img"]:
         textual_inversion = True
         textual_inversion_weights = json_data["txt2img"]["textual_inversion"]["weights"]
+        print(f"\n*** textual_inversion: {textual_inversion_weights} ***\n")
 
     # Create dataset to segmentation model class mappings
     class_id_mapping = create_class_id_mapping(dataset_to_model_class_map, label_model_classes_file)
@@ -162,7 +162,7 @@ def generate_txt2img_dataset(dataset_config_path:str):
         pipe.load_textual_inversion(textual_inversion_weights)
     pipe.enable_model_cpu_offload()
     pipe.enable_attention_slicing(1)
-    #pipe = pipe.to("cuda:0")
+    #pipe = pipe.to("cuda:1")
     
     yolo = None
     label_model_type = label_model["type"]
@@ -175,22 +175,16 @@ def generate_txt2img_dataset(dataset_config_path:str):
 
     label_pipe = LabelDiffusion(pipe, yolo, class_id_mapping)
     
-    
     # Calculate the number of prompts to sample
-    max_image_count = len(prompts_list)#*seed_count_per_prompt
-    if image_count < 1:
-        print(f"Error: image_count cannot be less than 1, image_count={image_count}")
-        return
-    
-    image_count = max_image_count if image_count > max_image_count else image_count
-    sample_size = int(image_count)
+    max_image_count = len(prompts_list) *seed_count_per_prompt
     
     # Randomly sample prompts
-    random_prompts_list = random.sample(prompts_list, sample_size)
-    print("Max possible image count: ", max_image_count)
-    print("Configured image count: ", image_count)
-    initial_seed = 9782091#random.randint(seed_range["min"], seed_range["max"]) # set to fixed seed, if need re-producablity 
+    random_prompts_list = prompts_list#random.sample(prompts_list, sample_size)
+    print("Total image count: ", max_image_count)
+    initial_seed = 9782091
     generator = create_generator(initial_seed) 
+    # generator = torch.Generator(device="cuda:0")
+    # generator.manual_seed(initial_seed)
     
     shard_index = 1
     current_image_count = 0
@@ -203,7 +197,8 @@ def generate_txt2img_dataset(dataset_config_path:str):
 
     if textual_inversion:
         sd_model_info["load_textual_inversion"] = textual_inversion_weights
-
+    
+    total_index = 1
     for index, prompt_info in enumerate(random_prompts_list, start=1):
         print_prompt_info(prompt_info)
 
@@ -223,14 +218,14 @@ def generate_txt2img_dataset(dataset_config_path:str):
         seeds = random_unique_int_list(seed_count_per_prompt, seed_range["min"], seed_range["max"])
         
         for seed in seeds:
-            current_image_count+=1
+            #current_image_count+=1
             print("\nseed=", seed)
-            print(f"current_image_count={current_image_count}/{image_count}", )
+            print(f"current_image_count={total_index}/{max_image_count}", )
             generator.manual_seed(seed)
             output, labels, binary_mask, attention_map = label_pipe(object_name, prompt, negative_prompt, steps, generator, width, height, unsupervised=unsupervised)
 
-            if len(labels) == 0:
-                continue
+            # if len(labels) == 0:
+                # continue
 
             label_file_data = {
                 "prompt_details": {
@@ -250,7 +245,7 @@ def generate_txt2img_dataset(dataset_config_path:str):
             output_image = output.images[0]
 
             name = object_name
-            basename = f"{name}_{view_point}_{time_of_day}_{sky_condition}_{weather_condition}_{seed}"
+            basename = f"{name}_{view_point}_{time_of_day}_{sky_condition}_{weather_condition}_{index}_{seed}"
             image_filename = f"{basename}.png"
             label_filename = f"{basename}.json"
 
@@ -262,9 +257,11 @@ def generate_txt2img_dataset(dataset_config_path:str):
             mask_image = draw_binary_mask(output_image, binary_mask)
             results_image = concat(concat(bbox_image, mask_image), attention_map)
             results_image.save(f"{results_dir}/{image_filename}")
-
-            if index % images_per_shard == 0:
+                
+            if total_index % images_per_shard == 0:
                 shard_index += 1
+            
+            total_index+=1
 
 
 if __name__ == "__main__":

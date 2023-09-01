@@ -234,9 +234,8 @@ def generate_img2img_dataset(dataset_config:str):
     seed = 9782091 # set to fixed seed, if need re-producablity 
     generator = create_generator(seed) 
 
-    shard_index = 1
     current_image_count = 0
-    for prompt_info in prompts_list:
+    for index, prompt_info in enumerate(prompts_list, start=1):
         print_prompt_info(prompt_info)
 
         prompt = prompt_info["prompt"]
@@ -247,7 +246,7 @@ def generate_img2img_dataset(dataset_config:str):
         weather_condition = prompt_info["weather_condition"]
         image_path = prompt_info["image_path"]
         seed = prompt_info["seed"]
-        print("image_path=", image_path)
+        print("input image_path=", image_path)
         attentions_dir, images_dir, labels_dir, masks_dir, vis_dir = create_output_directories(image_path, dataset_root, dataset_name)
         
         sd_model_info_json_file = f"{dataset_root}/{dataset_name}/img2img/stable_diffusion_model_info.json"
@@ -283,11 +282,11 @@ def generate_img2img_dataset(dataset_config:str):
         output_image = output.images[0]
 
         name = object_name
-        timestamp = datetime.now().strftime("%H%M%S")
-        basename = f"{name}_{view_point}_{time_of_day}_{sky_condition}_{weather_condition}_{seed}_{timestamp}"
+
+        basename = f"{name}_{view_point}_{time_of_day}_{sky_condition}_{weather_condition}_{index}_{seed}"
         image_filename = f"{basename}.{image_format}"
         label_filename = f"{basename}.json"
-        print(f"\n saving: {image_filename} \n")
+        print(f"\n saving: {images_dir}/{image_filename} \n")
         save_json(label_file_data, f"{labels_dir}/{label_filename}")
         output_image.save(f"{images_dir}/{image_filename}")
         attention_map.save(f"{attentions_dir}/{image_filename}")
