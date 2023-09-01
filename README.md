@@ -37,13 +37,14 @@ pip3 install -r requirements.txt
 ```
 ├───datasets    # contains datasets configuration files
 ├───generate    # contain methods to generate dataset per pipeline
-│   ├───txt2img.py          # Uses LabelDiffusionTxt2Img
-│   ├───img2img.py          # Uses LabelDiffusionImg2Img
-│   └───inpaint.py          # Uses LabelDiffusionInpaint
+│   ├───txt2img.py          # Generates text-to-image dataset, uses LabelDiffusion
+│   ├───img2img.py          # Generates image-to-image dataset, uses LabelDiffusionImg2Img
+│   └───inpaint.py          # Generates inpainting dataset, uses LabelDiffusionInpaint
 └───models
-    ├───sd
-    │   └───embeddings # textual inversion embeddings
-    └───seg            # segmentation models, currently YOLOv8-Seg
+│   ├───sd
+│   │   └───embeddings # textual inversion embeddings
+│   └───seg            # segmentation models, currently YOLOv8-Seg
+└───generate.py        # main python script to generates any of the txt2img, img2img, inpaint
 ```
 
 ## Generate Datasets
