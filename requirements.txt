@@ -1,2 +1,2 @@
 tqdm
-labeldiffusion
+git+https://github.com/mshenoda/label-diffusion
