@@ -33,7 +33,7 @@ pip3 install -r requirements.txt
 ```
 
 ## Structure
-Our [**LabelDiffusion**](https://github.com/mshenoda/label-diffusion) module is a core dependancy
+[**LabelDiffusion**](https://github.com/mshenoda/label-diffusion) is the core module of DiffuGen that provides labeling pipelines
 ```
 ├───datasets    # contains datasets configuration files
 ├───generate    # contain methods to generate dataset per pipeline
