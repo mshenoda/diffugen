@@ -12,8 +12,7 @@
     "images_per_shard": 500,
     "txt2img": {
         "seed_range": {"min":9092091, "max":9982091},
-        "seed_count_per_prompt": 2,
-        "image_count": 250,
+        "seed_count_per_prompt": 1,
         "textual_inversion": {
             "weights":"models/sd/embeddings/car-accident.pt",
             "keyword": "<car-accident>"
