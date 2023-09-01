@@ -11,6 +11,7 @@
     "deterministic": true,
     "images_per_shard": 500,
     "txt2img": {
+        "stable_diffusion_model": "mshenoda/realistic_vision_v4",
         "seed_range": {"min":9092091, "max":9982091},
         "seed_count_per_prompt": 1,
         "textual_inversion": {
