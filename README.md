@@ -68,7 +68,8 @@ python generate.py inpaint datasets\cars.json
 ## Training Textual Inversion
 Please follow the guide by huggingface:  https://huggingface.co/docs/diffusers/training/text_inversion
 
-If you find DiffuGen useful for your research please cite:
+## Citation
+If you find DiffuGen useful for your research, please cite:
 ```
 @inproceedings{diffugen,
   title     = {DiffuGen: Adaptable Approach for Generating Labeled Image Datasets using Stable Diffusion Models},
