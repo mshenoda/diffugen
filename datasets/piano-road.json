@@ -1,0 +1,27 @@
+{
+    "dataset_name": "piano-road-no-txtinv",
+    "dataset_root": "datasets_output",
+    "image_format": "png",
+    "image_size": {"width": 512, "height": 512},
+    "steps": 70,
+    "dataset_classes": ["car", "sedan", "suv", "pickup", "bus"],
+    "dataset_to_model_class_map": {"car":"car", "sedan": "car", "suv": "car", "pickup": "truck", "bus": "bus"},
+    "label_model": {"type": "YOLOSeg", "weights": "models/seg/yolov8l-seg.pt", "classes": "models/seg/yolov8-classes.txt"},
+    "unsupervised": true,
+    "deterministic": true,
+    "images_per_shard": 500,
+    "txt2img": {
+        "stable_diffusion_model": "mshenoda/realistic_vision_v4",
+        "seed_range": {"min":9092091, "max":9982091},
+        "seed_count_per_prompt": 12,
+        "image_count": 250,
+        "object_names": ["piano"],
+        "view_points": ["full"],
+        "times_of_day": ["day"],
+        "sky_conditions": ["clear"],
+        "weather_conditions": ["sunny"],
+        "prompts": [
+            "a {view_point} view of an elegant++ classic {object_name}++, standing in asphalt++ detailed road++. It's {weather_condition} weather. It's {time_of_day}"
+        ],
+        "negative_prompt": "(deformed piano, deformed, gigantic, deformed logo, deformed iris, deformed pupils, deformed text, semi-realistic, cgi, 3d, render, sketch, cartoon:1.5, drawing:1.4, anime:1.4), motion blur, soft blur, worst quality, low quality, ugly, duplicate, morbid, mutilated, extra fingers, mutated paino, poorly drawn hands, poorly drawn face, mutation, deformed, blurry, dehydrated, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, fused fingers, too many fingers, long neck"  }
+}
