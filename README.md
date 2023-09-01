@@ -33,7 +33,7 @@ pip3 install -r requirements.txt
 ```
 
 ## Structure
-Our module is [**LabelDiffusion**](https://github.com/mshenoda/label-diffusion) is a core dependancy
+Our [**LabelDiffusion**](https://github.com/mshenoda/label-diffusion) module is a core dependancy
 ```
 ├───datasets    # contains datasets configuration files
 ├───generate    # contain methods to generate dataset per pipeline
