@@ -305,8 +305,7 @@ def generate_inpaint_dataset(dataset_config:str):
         output_image = output.images[0]
 
         name = object_name
-        timestamp = datetime.now().strftime("%H%M%S")
-        basename = f"{name}_{view_point}_{time_of_day}_{sky_condition}_{weather_condition}_{seed}_{timestamp}"
+        basename = f"{name}_{view_point}_{time_of_day}_{sky_condition}_{weather_condition}_{index}_{seed}"
         image_filename = f"{basename}.{image_format}"
         label_filename = f"{basename}.json"
         print(f"\n saving: {images_dir}/{image_filename} \n")
