@@ -40,7 +40,7 @@ pip3 install -r requirements.txt
 │   ├───txt2img.py          # Generates text-to-image dataset, uses LabelDiffusion
 │   ├───img2img.py          # Generates image-to-image dataset, uses LabelDiffusionImg2Img
 │   └───inpaint.py          # Generates inpainting dataset, uses LabelDiffusionInpaint
-└───models
+├───models
 │   ├───sd
 │   │   └───embeddings # textual inversion embeddings
 │   └───seg            # segmentation models, currently YOLOv8-Seg
