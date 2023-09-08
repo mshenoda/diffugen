@@ -1,6 +1,6 @@
 # DiffuGen: Adaptable Approach for Generating Labeled Image Datasets using Stable Diffusion Models
 
-### [**Paper**](https://mshenoda.github.io/diffugen/static/pdfs/diffugen_paper.pdf) | [**Website**](https://mshenoda.github.io/diffugen)
+### [**Paper**](https://arxiv.org/pdf/2309.00248.pdf) | [**Website**](https://mshenoda.github.io/diffugen)
 
 To address challenges associated with dataset generation, we introduce "DiffuGen," a simple and adaptable approach that harnesses the power of stable diffusion models to create labeled image datasets efficiently. By leveraging stable diffusion models, our approach not only ensures the quality of generated datasets but also provides a versatile solution for label generation. The methodology behind DiffuGen, combines the capabilities of diffusion models with two distinct labeling techniques: unsupervised and supervised. Distinctively, DiffuGen employs prompt templating for adaptable image generation and textual inversion to enhance diffusion model capabilities. 
 
