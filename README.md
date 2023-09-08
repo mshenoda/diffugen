@@ -21,11 +21,19 @@ DiffuGen provides a robust framework that integrates pre-trained stable diffusio
 ```
 git clone https://github.com/mshenoda/diffugen.git
 ```
+
+### Create environment 
+```
+cd diffugen
+conda create -n diffugen python=3.11
+conda activate diffugen
+```
+
 ### Install requirements
 
 ### PyTorch with CUDA Dependency
 ```
-pip3 install torch --index-url https://download.pytorch.org/whl/cu118
+pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu118
 ```
 ### other packages
 ```
