@@ -74,7 +74,26 @@ python generate.py inpaint datasets\cars.json
 
 
 ## Training Textual Inversion
-Please follow the guide by huggingface:  https://huggingface.co/docs/diffusers/training/text_inversion
+
+Textual inversion is a training technique used in the context of stable diffusion models. It allows you to add new styles or objects to your text-to-image models without modifying the underlying model. 
+This technique works by learning and updating the text embeddings to match the example images you provide.
+
+General outline of training and using textual inversion:
+- A new keyword representing the desired concept is defined with a place holder <keyword>.
+- A new embedding vector for this specific word or token is initialized.
+- A collection of images that represent the new style or object is provided.
+- The new embedding vector is trained with these images to represent the desired concept in the embedding space.
+- The trained embeddings are loaded into the existing model. The model itself is not retrained.
+- The model generates images that aligns with the desired concept keyword using the new embeddings.
+
+Training Textual Inversion Notebook: 
+https://colab.research.google.com/github/huggingface/notebooks/blob/main/diffusers_doc/en/pytorch/text_inversion.ipynb
+
+Guide by huggingface: 
+https://huggingface.co/docs/diffusers/training/text_inversion
+
+Textual Inversion Paper: 
+https://textual-inversion.github.io/
 
 ## Citation
 If you find DiffuGen useful for your research, please cite:
